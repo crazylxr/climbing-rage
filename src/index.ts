@@ -1,10 +1,12 @@
 import { Camera, Vector3, WebGLEngine, Entity, Script } from "@galacean/engine";
-import { ChickenManager, JumpScript } from "./chickenManager";
+import { ChickenManager } from "./chickenManager";
 import { GameState } from "./Eunm";
 import { StairManager } from "./stairManager";
 import { PhysXPhysics } from "@galacean/engine-physics-physx";
 
 import { Score } from "./component/Score";
+import { JumpScript } from "./Script/JumpScript";
+import { CtrlButton } from "./component/CtrlButton";
 
 export class GameCtrl {
   private _engine: WebGLEngine;
@@ -38,11 +40,11 @@ export class GameCtrl {
         break;
       case GameState.InitScene:
         this.initScene(() => this.jump(GameState.Start));
-        this.jump(GameState.Start);
+        // this.jump(GameState.Start);
         break;
       case GameState.Start:
+        this.start();
         // 开始游戏
-        this._engine.run();
         break;
       case GameState.End:
         this.gameOver();
@@ -57,6 +59,7 @@ export class GameCtrl {
       false;
 
     StairManager.instance.stop();
+    this._rootEntity.findByName("ctrl").isActive = true;
   }
 
   /**
@@ -99,13 +102,20 @@ export class GameCtrl {
 
     // rootEntity.addComponent(TweenScript);
 
-    // 加载小鸡和楼梯
-    ChickenManager.instance.loadChicken();
-    StairManager.instance.loadStair();
-
     // init 分数
     const scoreEntity = rootEntity.createChild("score");
     scoreEntity.addComponent(Score);
+
+    const ctrlEntity = rootEntity.createChild("ctrl");
+    ctrlEntity.addComponent(CtrlButton);
+
+    this._engine.run();
+  }
+
+  start() {
+    // 加载小鸡和楼梯
+    ChickenManager.instance.loadChicken();
+    StairManager.instance.loadStair();
   }
 }
 

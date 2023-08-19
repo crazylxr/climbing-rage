@@ -7,14 +7,14 @@ import {
   Vector3,
 } from "@galacean/engine";
 import { GameCtrl } from ".";
-import { addBoxCollider, addWireframe, MoveBy } from "./util";
+import { addWireframe } from "./util";
 
 export class StairManager {
   private static _instance: StairManager;
   /**
    * 用来放置梯子的根节点
    */
-  stairRootEntity: Entity;
+  stairRootEntity: Entity | null = null;
   stairEntityList: Entity[];
   lastStairIndex: number = 4; // 最后一块梯子的索引
   firstStairIndex: number = 0; // 第一块梯子的索引
@@ -29,6 +29,18 @@ export class StairManager {
 
   loadStair() {
     const { engine, rootEntity } = GameCtrl.instance;
+
+    if (this.stairRootEntity) {
+      this.stairRootEntity.destroy();
+      rootEntity.removeChild(this.stairRootEntity);
+      this.stairRootEntity = null;
+      this.stairEntityList = [];
+
+      this.lastStairIndex = 4;
+      this.firstStairIndex = 0;
+      this.timer = 0;
+    }
+
     // 加载梯子 gltf 模型
     engine.resourceManager
       .load<GLTFResource>(
@@ -59,7 +71,7 @@ export class StairManager {
         }
       });
 
-      this.stairRootEntity.addChild(curEntity);
+      this.stairRootEntity!.addChild(curEntity);
     }
 
     this.timer = setInterval(() => {
@@ -72,7 +84,7 @@ export class StairManager {
     clearInterval(this.timer);
 
     // 停止所有梯子的移动
-    this.stairRootEntity.children.forEach((entity) => {
+    this.stairRootEntity!.children.forEach((entity) => {
       entity.getComponent(MoveScript).enabled = false;
     });
   }
@@ -87,7 +99,7 @@ export class StairManager {
     const i = this.lastStairIndex;
 
     const curEntity = this.stairEntityList[i].clone();
-    const { y, z } = this.stairRootEntity.children[4].transform.position;
+    const { y, z } = this.stairRootEntity!.children[4].transform.position;
     curEntity.transform.setPosition(0, y + 3, z - 5);
     curEntity.transform.setRotation(30, 0, 0);
 
@@ -98,11 +110,11 @@ export class StairManager {
       child.addComponent(CollisionScript);
     });
 
-    this.stairRootEntity.addChild(curEntity);
+    this.stairRootEntity!.addChild(curEntity);
 
     // 移除第一个梯子
-    const firstEntity = this.stairRootEntity.children[0];
-    this.stairRootEntity.removeChild(firstEntity);
+    const firstEntity = this.stairRootEntity!.children[0];
+    this.stairRootEntity!.removeChild(firstEntity);
   }
 }
 
