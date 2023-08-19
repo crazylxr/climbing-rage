@@ -1,9 +1,17 @@
-import { Entity, GLTFResource } from "@galacean/engine";
+import { Entity, GLTFResource, Script } from "@galacean/engine";
+import { update } from "@tweenjs/tween.js";
 import { GameCtrl } from ".";
+import { addBoxCollider, MoveBy } from "./util";
 
 export class StairManager {
   private static _instance: StairManager;
-  stairEntity: Entity;
+  /**
+   * 用来放置梯子的根节点
+   */
+  stairRootEntity: Entity;
+  stairEntityList: Entity[];
+  lastStairIndex: number = 4; // 最后一块梯子的索引
+  firstStairIndex: number = 0; // 第一块梯子的索引
 
   public static get instance(): StairManager {
     if (!this._instance) {
@@ -20,28 +28,61 @@ export class StairManager {
         "https://mdn.alipayobjects.com/afts/file/A*QpYQQpIfG8kAAAAAAAAAAAAADrd2AQ/stairs.gltf"
       )
       .then((resource) => {
-        const { animations, defaultSceneRoot, entities } = resource;
+        const { defaultSceneRoot } = resource;
 
-        console.log("resource", resource);
-        // defaultSceneRoot.transform.setPosition(0, 0, 0);
-        // const one = entities![14];
-        // const two = entities![29];
-        // one.transform.setPosition(0, 0, -5);
-        // one.transform.setRotation(30, 0, 0);
+        this.stairEntityList = defaultSceneRoot.children.concat();
+        this.stairRootEntity = rootEntity.createChild("stairRootEntity");
 
-        // two.transform.setPosition(0, 3, -10);
-        // two.transform.setRotation(30, 0, 0);
-        // // rootEntity.addChild(resource.defaultSceneRoot);
-        // rootEntity.addChild(one);
-        // rootEntity.addChild(two);
-        this.stairEntity = defaultSceneRoot;
-
-        for (let i = 0; i < 5; i++) {
-          const curEntity = defaultSceneRoot.children[i];
-          curEntity.transform.setPosition(0, 3 * i, -5 * (i));
-          curEntity.transform.setRotation(30, 0, 0);
-					rootEntity.addChild(curEntity);
-        }
+        this.run();
       });
+  }
+
+  run() {
+    for (let i = 0; i < 5; i++) {
+      const curEntity = this.stairEntityList[i].clone();
+      curEntity.transform.setPosition(0, -10 + 3 * i, -5 * i);
+      curEntity.transform.setRotation(30, 0, 0);
+      curEntity.addComponent(MoveByScript);
+
+      // console.log("curEntity.children[0]", curEntity.children[0]);
+      // addBoxCollider(curEntity.children[0], 1, true);
+
+      this.stairRootEntity.addChild(curEntity);
+    }
+
+    setInterval(() => {
+      this.addStair();
+    }, 1000);
+  }
+
+  addStair() {
+    if (this.lastStairIndex === 17) {
+      this.lastStairIndex = 0;
+    } else {
+      this.lastStairIndex++;
+    }
+
+    const i = this.lastStairIndex;
+
+    const curEntity = this.stairEntityList[i].clone();
+    console.log("children", this.stairEntityList);
+    console.log("curEntity", curEntity);
+    console.log("i", i);
+    const { y, z } = this.stairRootEntity.children[4].transform.position;
+    curEntity.transform.setPosition(0, y + 3, z - 5);
+    curEntity.transform.setRotation(30, 0, 0);
+
+    curEntity.addComponent(MoveByScript);
+    this.stairRootEntity.addChild(curEntity);
+
+    const firstEntity = this.stairRootEntity.children[0];
+    this.stairRootEntity.removeChild(firstEntity);
+  }
+}
+
+class MoveByScript extends Script {
+  onUpdate(deltaTime: number) {
+    const { x, y, z } = this.entity.transform.position;
+    this.entity.transform.setPosition(0, y - deltaTime * 3, z + deltaTime * 5);
   }
 }

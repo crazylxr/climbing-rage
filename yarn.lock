@@ -36,6 +36,16 @@
   resolved "https://registry.yarnpkg.com/@galacean/engine-math/-/engine-math-1.0.0-beta.8.tgz#f644150156b5716f5d3e54c513fc7322e41f1997"
   integrity sha512-S0hrj4c26HgL7tlOda3pLVGdKUHPQORGmw5JarhV9oeRMl8gALYDl2TSVMFKrbIO02NsqYGpLK3aPeQeRxg+1A==
 
+"@galacean/engine-physics-lite@^1.0.0-beta.18":
+  version "1.0.0-beta.19"
+  resolved "https://registry.yarnpkg.com/@galacean/engine-physics-lite/-/engine-physics-lite-1.0.0-beta.19.tgz#738bbc5d6506a225b382256defafb2dc67886616"
+  integrity sha512-k50eV5U04bUJyG0uR5wmNuYyHhsoZWwMu2ZnSngrqKNv9scqol/WNlqtfxLtXKfgBGDKi+Xl2nD5aNImZEea6g==
+
+"@galacean/engine-physics-physx@1.0.0-beta.18":
+  version "1.0.0-beta.18"
+  resolved "https://registry.yarnpkg.com/@galacean/engine-physics-physx/-/engine-physics-physx-1.0.0-beta.18.tgz#a3021b6ed96bf28dbea308e7670688312d419f47"
+  integrity sha512-kTJWnlRVPra/Xqa8dWVyMVzHdiiEZkDjZPz2/eB+HmqzLdziJZ9+0rzHcz5k8NgGsfMRIDK8JFHbHSofBh9I1w==
+
 "@galacean/engine-rhi-webgl@1.0.0-beta.8":
   version "1.0.0-beta.8"
   resolved "https://registry.yarnpkg.com/@galacean/engine-rhi-webgl/-/engine-rhi-webgl-1.0.0-beta.8.tgz#a3cc586e6426dd20bc38c90513f1840914e3e0ae"
@@ -43,6 +53,11 @@
   dependencies:
     "@galacean/engine-core" "1.0.0-beta.8"
     "@galacean/engine-math" "1.0.0-beta.8"
+
+"@galacean/engine-toolkit-auxiliary-lines@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@galacean/engine-toolkit-auxiliary-lines/-/engine-toolkit-auxiliary-lines-0.9.0.tgz#b38da21e2dab3b358d9d78ff25cf500e7588fbc2"
+  integrity sha512-j6k+ZN02efBRoAQ6es2Poq6CSnFuwt+bnWjVK8lK9hIBTtu6JbS5e1L9UnfVsSLpTJzloO+1F9IcY/dt5lDbeA==
 
 "@galacean/engine@1.0.0-beta.8":
   version "1.0.0-beta.8"
@@ -53,6 +68,11 @@
     "@galacean/engine-loader" "1.0.0-beta.8"
     "@galacean/engine-math" "1.0.0-beta.8"
     "@galacean/engine-rhi-webgl" "1.0.0-beta.8"
+
+"@tweenjs/tween.js@^21.0.0":
+  version "21.0.0"
+  resolved "https://registry.yarnpkg.com/@tweenjs/tween.js/-/tween.js-21.0.0.tgz#73f993c2d1de37b78b4c1246163e20bc6ae3b75e"
+  integrity sha512-qVfOiFh0U8ZSkLgA6tf7kj2MciqRbSCWaJZRwftVO7UbtVDNsZAXpWXqvCDtIefvjC83UJB+vHTDOGm5ibXjEA==
 
 esbuild-android-64@0.14.54:
   version "0.14.54"

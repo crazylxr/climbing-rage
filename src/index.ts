@@ -1,17 +1,13 @@
-import {
-  BlinnPhongMaterial,
-  Camera,
-  MeshRenderer,
-  PrimitiveMesh,
-  Vector3,
-  WebGLEngine,
-  GLTFResource,
-  Animator,
-  Entity,
-} from "@galacean/engine";
+import { Camera, Vector3, WebGLEngine, Entity, Script, MeshRenderer } from "@galacean/engine";
+import TWEEN from "@tweenjs/tween.js";
 import { ChickenManager } from "./chickenManager";
 import { GameState } from "./Eunm";
 import { StairManager } from "./stairManager";
+import { LitePhysics } from "@galacean/engine-physics-lite";
+import { PhysXPhysics } from "@galacean/engine-physics-physx";
+
+
+import { ActionTweenGroup } from "./util";
 
 export class GameCtrl {
   private _engine: WebGLEngine;
@@ -61,7 +57,7 @@ export class GameCtrl {
    * @param complete
    */
   async initEngine(complete: () => void) {
-    WebGLEngine.create({ canvas: "canvas" })
+    WebGLEngine.create({ canvas: "canvas", physics: new PhysXPhysics() })
       .then((engine) => {
         engine.canvas.resizeByClientSize();
         this._engine = engine;
@@ -94,9 +90,18 @@ export class GameCtrl {
 
     this._rootEntity = rootEntity;
 
+    rootEntity.addComponent(TweenScript);
+
     ChickenManager.instance.loadChicken();
     StairManager.instance.loadStair();
   }
 }
 
 GameCtrl.instance.jump(GameState.InitEngine);
+
+class TweenScript extends Script {
+  onUpdate(deltaTime: number): void {
+    // ActionTweenGroup.update(deltaTime);
+    TWEEN.update();
+  }
+}
