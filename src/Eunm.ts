@@ -7,4 +7,6 @@ export enum GameState {
   InitScene,
   // 开始
   Start,
+  // 结束
+  End,
 }

@@ -1,19 +1,9 @@
-import {
-  Camera,
-  Vector3,
-  WebGLEngine,
-  Entity,
-  Script,
-  MeshRenderer,
-} from "@galacean/engine";
-import TWEEN from "@tweenjs/tween.js";
-import { ChickenManager } from "./chickenManager";
+import { Camera, Vector3, WebGLEngine, Entity, Script } from "@galacean/engine";
+import { ChickenManager, JumpScript } from "./chickenManager";
 import { GameState } from "./Eunm";
 import { StairManager } from "./stairManager";
-import { LitePhysics } from "@galacean/engine-physics-lite";
 import { PhysXPhysics } from "@galacean/engine-physics-physx";
 
-import { ActionTweenGroup } from "./util";
 import { Score } from "./component/Score";
 
 export class GameCtrl {
@@ -54,9 +44,19 @@ export class GameCtrl {
         // 开始游戏
         this._engine.run();
         break;
+      case GameState.End:
+        this.gameOver();
+        break;
       default:
         break;
     }
+  }
+
+  gameOver() {
+    ChickenManager.instance.chickenEntity.getComponent(JumpScript).enabled =
+      false;
+
+    StairManager.instance.stop();
   }
 
   /**
@@ -97,8 +97,9 @@ export class GameCtrl {
 
     this._rootEntity = rootEntity;
 
-    rootEntity.addComponent(TweenScript);
+    // rootEntity.addComponent(TweenScript);
 
+    // 加载小鸡和楼梯
     ChickenManager.instance.loadChicken();
     StairManager.instance.loadStair();
 
@@ -110,9 +111,9 @@ export class GameCtrl {
 
 GameCtrl.instance.jump(GameState.InitEngine);
 
-class TweenScript extends Script {
-  onUpdate(deltaTime: number): void {
-    // ActionTweenGroup.update(deltaTime);
-    TWEEN.update();
-  }
-}
+// class TweenScript extends Script {
+//   onUpdate(deltaTime: number): void {
+//     // ActionTweenGroup.update(deltaTime);
+//     TWEEN.update();
+//   }
+// }

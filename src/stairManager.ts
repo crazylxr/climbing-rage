@@ -18,6 +18,7 @@ export class StairManager {
   stairEntityList: Entity[];
   lastStairIndex: number = 4; // 最后一块梯子的索引
   firstStairIndex: number = 0; // 第一块梯子的索引
+  timer = 0;
 
   public static get instance(): StairManager {
     if (!this._instance) {
@@ -35,6 +36,7 @@ export class StairManager {
       )
       .then((resource) => {
         const { defaultSceneRoot } = resource;
+        console.log("resource梯子", resource);
 
         this.stairEntityList = defaultSceneRoot.children.concat();
         this.stairRootEntity = rootEntity.createChild("stairRootEntity");
@@ -50,15 +52,29 @@ export class StairManager {
       curEntity.transform.setRotation(30, 0, 0);
       curEntity.addComponent(MoveScript);
 
-      const coin = curEntity.children[0];
-      coin.addComponent(CollisionScript);
+      // 给硬币添加碰撞体
+      curEntity.children.forEach((child) => {
+        if (child.name.includes("coin") || child.name.includes("obstacle")) {
+          child.addComponent(CollisionScript);
+        }
+      });
 
       this.stairRootEntity.addChild(curEntity);
     }
 
-    setInterval(() => {
+    this.timer = setInterval(() => {
       this.addStair();
-    }, 1000);
+    }, 500);
+  }
+
+  stop() {
+    // 停止定时器, 停止梯子的移动
+    clearInterval(this.timer);
+
+    // 停止所有梯子的移动
+    this.stairRootEntity.children.forEach((entity) => {
+      entity.getComponent(MoveScript).enabled = false;
+    });
   }
 
   addStair() {
@@ -78,8 +94,9 @@ export class StairManager {
     curEntity.addComponent(MoveScript);
 
     // 给硬币添加碰撞体
-    const coin = curEntity.children[0];
-    coin.addComponent(CollisionScript);
+    curEntity.children.forEach((child) => {
+      child.addComponent(CollisionScript);
+    });
 
     this.stairRootEntity.addChild(curEntity);
 
@@ -92,7 +109,7 @@ export class StairManager {
 class MoveScript extends Script {
   onUpdate(deltaTime: number) {
     const { x, y, z } = this.entity.transform.position;
-    this.entity.transform.setPosition(0, y - deltaTime * 3, z + deltaTime * 5);
+    this.entity.transform.setPosition(0, y - deltaTime * 6, z + deltaTime * 10);
   }
 }
 
@@ -108,6 +125,9 @@ class CollisionScript extends Script {
   }
 
   onAwake(): void {
+    // const sprites = this.entity.getComponent(MeshRenderer);
+    // console.log("sprite", sprites);
+
     const cubeSize = 1;
     const physicsBox = new BoxColliderShape();
     physicsBox.size = new Vector3(cubeSize, cubeSize, cubeSize);

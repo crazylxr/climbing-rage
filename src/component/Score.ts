@@ -9,11 +9,11 @@ export class Score extends Component {
 
     const renderer = this.entity.addComponent(TextRenderer);
     renderer.text = "分数：" + this._score;
-		renderer.fontSize = 60;
+    renderer.fontSize = 60;
 
     this.renderer = renderer;
 
-		this.entity.transform.setPosition(0, 10, 0);
+    this.entity.transform.setPosition(0, 10, 0);
   }
 
   addScore() {
@@ -23,5 +23,9 @@ export class Score extends Component {
 
   getScore() {
     return this._score;
+  }
+
+  setText(text: string) {
+    this.renderer.text = text;
   }
 }
