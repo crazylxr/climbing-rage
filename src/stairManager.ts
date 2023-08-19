@@ -58,13 +58,14 @@ export class StairManager {
   }
 
   run() {
+    // 先默认添加 5 个梯子
     for (let i = 0; i < 5; i++) {
       const curEntity = this.stairEntityList[i].clone();
       curEntity.transform.setPosition(0, -10 + 3 * i, -5 * i);
       curEntity.transform.setRotation(30, 0, 0);
       curEntity.addComponent(MoveScript);
 
-      // 给硬币添加碰撞体
+      // 给硬币和添加碰撞体
       curEntity.children.forEach((child) => {
         if (child.name.includes("coin") || child.name.includes("obstacle")) {
           child.addComponent(CollisionScript);
@@ -72,6 +73,7 @@ export class StairManager {
       });
 
       this.stairRootEntity!.addChild(curEntity);
+      // this.addStair();
     }
 
     this.timer = setInterval(() => {
@@ -105,10 +107,17 @@ export class StairManager {
 
     curEntity.addComponent(MoveScript);
 
-    // 给硬币添加碰撞体
+    // 给硬币和添加碰撞体
     curEntity.children.forEach((child) => {
-      child.addComponent(CollisionScript);
+      if (child.name.includes("coin") || child.name.includes("obstacle")) {
+        child.addComponent(CollisionScript);
+      }
     });
+
+    // // 给硬币添加碰撞体
+    // curEntity.children.forEach((child) => {
+    //   child.addComponent(CollisionScript);
+    // });
 
     this.stairRootEntity!.addChild(curEntity);
 
