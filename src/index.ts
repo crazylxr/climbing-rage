@@ -1,4 +1,11 @@
-import { Camera, Vector3, WebGLEngine, Entity, Script, MeshRenderer } from "@galacean/engine";
+import {
+  Camera,
+  Vector3,
+  WebGLEngine,
+  Entity,
+  Script,
+  MeshRenderer,
+} from "@galacean/engine";
 import TWEEN from "@tweenjs/tween.js";
 import { ChickenManager } from "./chickenManager";
 import { GameState } from "./Eunm";
@@ -6,8 +13,8 @@ import { StairManager } from "./stairManager";
 import { LitePhysics } from "@galacean/engine-physics-lite";
 import { PhysXPhysics } from "@galacean/engine-physics-physx";
 
-
 import { ActionTweenGroup } from "./util";
+import { Score } from "./component/Score";
 
 export class GameCtrl {
   private _engine: WebGLEngine;
@@ -94,6 +101,10 @@ export class GameCtrl {
 
     ChickenManager.instance.loadChicken();
     StairManager.instance.loadStair();
+
+    // init 分数
+    const scoreEntity = rootEntity.createChild("score");
+    scoreEntity.addComponent(Score);
   }
 }
 

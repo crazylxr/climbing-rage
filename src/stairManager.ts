@@ -1,7 +1,13 @@
-import { Entity, GLTFResource, Script } from "@galacean/engine";
-import { update } from "@tweenjs/tween.js";
+import {
+  BoxColliderShape,
+  Entity,
+  GLTFResource,
+  Script,
+  StaticCollider,
+  Vector3,
+} from "@galacean/engine";
 import { GameCtrl } from ".";
-import { addBoxCollider, MoveBy } from "./util";
+import { addBoxCollider, addWireframe, MoveBy } from "./util";
 
 export class StairManager {
   private static _instance: StairManager;
@@ -42,10 +48,10 @@ export class StairManager {
       const curEntity = this.stairEntityList[i].clone();
       curEntity.transform.setPosition(0, -10 + 3 * i, -5 * i);
       curEntity.transform.setRotation(30, 0, 0);
-      curEntity.addComponent(MoveByScript);
+      curEntity.addComponent(MoveScript);
 
-      // console.log("curEntity.children[0]", curEntity.children[0]);
-      // addBoxCollider(curEntity.children[0], 1, true);
+      const coin = curEntity.children[0];
+      coin.addComponent(CollisionScript);
 
       this.stairRootEntity.addChild(curEntity);
     }
@@ -65,24 +71,53 @@ export class StairManager {
     const i = this.lastStairIndex;
 
     const curEntity = this.stairEntityList[i].clone();
-    console.log("children", this.stairEntityList);
-    console.log("curEntity", curEntity);
-    console.log("i", i);
     const { y, z } = this.stairRootEntity.children[4].transform.position;
     curEntity.transform.setPosition(0, y + 3, z - 5);
     curEntity.transform.setRotation(30, 0, 0);
 
-    curEntity.addComponent(MoveByScript);
+    curEntity.addComponent(MoveScript);
+
+    // 给硬币添加碰撞体
+    const coin = curEntity.children[0];
+    coin.addComponent(CollisionScript);
+
     this.stairRootEntity.addChild(curEntity);
 
+    // 移除第一个梯子
     const firstEntity = this.stairRootEntity.children[0];
     this.stairRootEntity.removeChild(firstEntity);
   }
 }
 
-class MoveByScript extends Script {
+class MoveScript extends Script {
   onUpdate(deltaTime: number) {
     const { x, y, z } = this.entity.transform.position;
     this.entity.transform.setPosition(0, y - deltaTime * 3, z + deltaTime * 5);
+  }
+}
+
+class CollisionScript extends Script {
+  // private _showWireframe: boolean = false;
+
+  set showWireframe(value: boolean) {
+    // this._showWireframe = value;
+
+    if (value) {
+      addWireframe(this.entity.getComponent(StaticCollider));
+    }
+  }
+
+  onAwake(): void {
+    const cubeSize = 1;
+    const physicsBox = new BoxColliderShape();
+    physicsBox.size = new Vector3(cubeSize, cubeSize, cubeSize);
+    physicsBox.position = new Vector3(0, 0, 0);
+    physicsBox.material.staticFriction = 0.1;
+    physicsBox.material.dynamicFriction = 0.2;
+    physicsBox.material.bounciness = 1;
+    physicsBox.isTrigger = true;
+
+    const collier = this.entity.addComponent(StaticCollider);
+    collier.addShape(physicsBox);
   }
 }

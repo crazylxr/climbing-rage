@@ -1,17 +1,15 @@
 import {
   Animator,
   BoxColliderShape,
+  DynamicCollider,
   Entity,
   GLTFResource,
-  MeshRenderer,
-  PBRMaterial,
-  PrimitiveMesh,
-  StaticCollider,
-  Vector3,
+  Script,
+  SphereColliderShape,
 } from "@galacean/engine";
-import { WireframeManager } from "@galacean/engine-toolkit-auxiliary-lines";
 import { GameCtrl } from ".";
-import { addBoxCollider } from "./util";
+import { Score } from "./component/Score";
+import { addWireframe } from "./util";
 
 export class ChickenManager {
   private static _instance: ChickenManager;
@@ -35,16 +33,40 @@ export class ChickenManager {
         const { animations, defaultSceneRoot } = resource;
         console.log("resource小鸡", resource);
         rootEntity.addChild(resource.defaultSceneRoot);
-        defaultSceneRoot.transform.setPosition(0, -8, 0);
+        defaultSceneRoot.transform.setPosition(0, -9, 0);
         defaultSceneRoot.transform.setRotation(0, 180, 0);
         const animation = defaultSceneRoot.getComponent(Animator);
         animation.play(animations![0].name);
 
         this.chickenEntity = defaultSceneRoot;
 
-        // 添加碰撞体
-        // this.addBoxCollider();
-        addBoxCollider(defaultSceneRoot, 1.5, true);
+        defaultSceneRoot.addComponent(CollisionScript);
       });
+  }
+}
+
+class CollisionScript extends Script {
+  onAwake(): void {
+    // 增加小鸡的碰撞体
+    const sphereColliderShape = new SphereColliderShape();
+    sphereColliderShape.position.set(0, 0.75, 0);
+    sphereColliderShape.radius = 0.9;
+
+    const collider = this.entity.addComponent(DynamicCollider);
+    collider.isKinematic = true;
+    collider.addShape(sphereColliderShape);
+
+    addWireframe(collider);
+  }
+
+  onTriggerEnter(other: BoxColliderShape) {
+    other.collider.entity.destroy();
+    console.log("onTriggerEnter", other);
+    const { rootEntity } = GameCtrl.instance;
+    rootEntity.findByName("score").getComponent(Score).addScore();
+  }
+
+  onPhysicsUpdate(): void {
+    this.entity.transform.setPosition(0, -9, 0);
   }
 }

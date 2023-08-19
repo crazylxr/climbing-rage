@@ -1,7 +1,9 @@
 import {
   BoxColliderShape,
+  DynamicCollider,
   Entity,
   MeshRenderer,
+  SphereColliderShape,
   StaticCollider,
   Vector3,
 } from "@galacean/engine";
@@ -45,13 +47,29 @@ export function MoveBy(
 export function addBoxCollider(
   entity: Entity,
   size: number,
-  needWireframe: boolean
+  needWireframe: boolean,
+  position: Vector3,
+  isStatic: boolean = true
 ) {
+  let collider;
+  if (isStatic) {
+    collider = addStaticCollider(entity, size, position);
+  } else {
+    collider = addDynamicCollider(entity, size, position);
+  }
+
+  // 给碰撞体添加辅助线
+  if (needWireframe) {
+    addWireframe(collider);
+  }
+}
+
+function addStaticCollider(entity: Entity, size: number, position?: Vector3) {
   const cubeSize = size;
   // 增加小鸡的碰撞体
   const physicsBox = new BoxColliderShape();
-  physicsBox.position = new Vector3(0, 1, 0);
   physicsBox.size = new Vector3(cubeSize, cubeSize, cubeSize);
+  physicsBox.position = position || new Vector3(0, 0, 0);
   physicsBox.material.staticFriction = 0.1;
   physicsBox.material.dynamicFriction = 0.2;
   physicsBox.material.bounciness = 1;
@@ -59,11 +77,19 @@ export function addBoxCollider(
 
   const collider = entity.addComponent(StaticCollider);
   collider.addShape(physicsBox);
+  return collider;
+}
 
-  // 给碰撞体添加辅助线
-  if (needWireframe) {
-    addWireframe(collider);
-  }
+function addDynamicCollider(entity: Entity, size: number, position?: Vector3) {
+  const cubeSize = size;
+  // 增加小鸡的碰撞体
+  const sphereColliderShape = new SphereColliderShape();
+  sphereColliderShape.radius = size;
+
+  const collider = entity.addComponent(DynamicCollider);
+  collider.isKinematic = true;
+  collider.addShape(sphereColliderShape);
+  return collider;
 }
 
 /**
