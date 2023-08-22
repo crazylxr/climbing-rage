@@ -8,8 +8,11 @@ export class Score extends Component {
     super(e);
 
     const renderer = this.entity.addComponent(TextRenderer);
+    renderer.width = 7.5;
     renderer.text = "分数：" + this._score;
     renderer.fontSize = 60;
+    // 打开换行模式
+    renderer.enableWrapping = true;
 
     this.renderer = renderer;
 

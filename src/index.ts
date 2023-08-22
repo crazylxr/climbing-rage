@@ -92,7 +92,7 @@ export class GameCtrl {
     const pos = cameraEntity.transform.position;
     pos.set(0, 0, 30);
     cameraEntity.transform.position = pos;
-    cameraEntity.transform.lookAt(new Vector3(0, 0, 0));
+    // cameraEntity.transform.lookAt(new Vector3(0, 0, 0));
 
     // init light
     scene.ambientLight.diffuseSolidColor.set(1, 1, 1, 1);

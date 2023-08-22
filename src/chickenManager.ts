@@ -72,7 +72,10 @@ class CollisionScript extends Script {
       other.collider.entity.destroy();
       rootEntity.findByName("score").getComponent(Score).addScore();
     } else {
-      rootEntity.findByName("score").getComponent(Score).setText("游戏结束");
+      rootEntity
+        .findByName("score")
+        .getComponent(Score)
+        .setText("游戏结束 \n请点击下面的 「Play」 按钮\n重新开始游戏");
       // this.entity.getComponent(JumpScript).enabled = false;
       GameCtrl.instance.jump(GameState.End);
     }
