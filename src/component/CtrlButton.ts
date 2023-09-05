@@ -56,8 +56,10 @@ class PointScript extends Script {
   }
 
   onPointerClick(): void {
+    const { rootEntity } = GameCtrl.instance;
     GameCtrl.instance.jump(GameState.Start);
 
     this.entity.isActive = false;
+
   }
 }

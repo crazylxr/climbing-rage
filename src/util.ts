@@ -103,3 +103,13 @@ export function addWireframe(collider: StaticCollider) {
   const wireframe = rootEntity.addComponent(WireframeManager);
   wireframe.addCollideWireframe(collider);
 }
+
+
+export function removeColliers(entity: Entity) {
+  const colliers: StaticCollider[] = [];
+  entity.getComponentsIncludeChildren(StaticCollider, colliers);
+  console.log('removeColliers', colliers.length);
+  for (const collier of colliers) {
+    collier.destroy();
+  }
+}
