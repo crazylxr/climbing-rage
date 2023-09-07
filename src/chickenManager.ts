@@ -5,6 +5,7 @@ import {
   Entity,
   GLTFResource,
   Keys,
+  MeshRenderer,
   Pointer,
   Script,
   SphereColliderShape,
@@ -12,6 +13,7 @@ import {
 import { GameCtrl } from ".";
 import { Score } from "./component/Score";
 import { GameState } from "./Eunm";
+import { SpeedManager } from "./speedManager";
 import { StairManager } from "./stairManager";
 import { addWireframe } from "./util";
 
@@ -59,18 +61,22 @@ class CollisionScript extends Script {
     // 增加小鸡的碰撞体
     const sphereColliderShape = new SphereColliderShape();
     sphereColliderShape.position.set(0, 0.75, 0);
-    sphereColliderShape.radius = 0.7;
+    sphereColliderShape.radius = 1;
 
     const collider = this.entity.addComponent(DynamicCollider);
     collider.isKinematic = true;
     collider.addShape(sphereColliderShape);
 
-    addWireframe(collider);
+    // addWireframe(collider);
   }
 
   onTriggerEnter(other: BoxColliderShape) {
     const name = other.collider.entity.name;
     console.log("onTriggerEnter", other.collider);
+
+    const components = [];
+    other.collider.entity.getComponentsIncludeChildren(MeshRenderer, components);
+    console.log("components", components);
     const { rootEntity } = GameCtrl.instance;
 
     if (name.includes("coin")) {
@@ -117,7 +123,7 @@ export class JumpScript extends Script {
     // 如果小鸡掉落到地面，重置时间和速度
     if (y <= -9) {
       this._time = 0;
-      this._speed = this._initSpeed;
+      this._speed = this._initSpeed * SpeedManager.instance.speedFactor;
     }
 
     // 1. 计算更新时间：t=t+时间步长

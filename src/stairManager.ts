@@ -9,6 +9,7 @@ import {
 } from "@galacean/engine";
 import { WireframeManager } from "@galacean/engine-toolkit-auxiliary-lines";
 import { GameCtrl } from ".";
+import { SpeedManager } from "./speedManager";
 import { addWireframe } from "./util";
 
 export class StairManager {
@@ -70,9 +71,11 @@ export class StairManager {
           child.addComponent(CollisionScript);
         }
       });
-      const wireframe = GameCtrl.instance.rootEntity?.addComponent(WireframeManager);
-      wireframe?.addEntityWireframe(curEntity);
     }
+
+    //  const wireframe = GameCtrl.instance.rootEntity?.addComponent(WireframeManager);
+    //  wireframe?.addEntityWireframe(this.stairRootEntity, true);
+
   }
 
   run() {
@@ -91,14 +94,12 @@ export class StairManager {
       curEntity.addComponent(MoveScript);
 
       this.stairRootEntity!.addChild(curEntity);
-
-      // const wireframe = GameCtrl.instance.rootEntity?.addComponent(WireframeManager);
-      // wireframe?.addEntityWireframe(curEntity);
     }
 
-    this.timer = setInterval(() => {
-      this.addStair();
-    }, 1000);
+    // this.timer = setInterval(() => {
+    //   this.addStair();
+    // }, 1000);
+    SpeedManager.instance.start();
   }
 
   stop() {
@@ -112,7 +113,6 @@ export class StairManager {
   }
 
   addStair() {
-    console.log('add:', Date.now())
     if (this.lastStairIndex === 17) {
       this.lastStairIndex = 0;
     } else {
@@ -123,22 +123,22 @@ export class StairManager {
 
     const curEntity = this.stairEntityList[i].clone();
     const { y, z } = this.stairRootEntity!.children[4].transform.position;
+    const factor = SpeedManager.instance.speedFactor;
+    console.log('factor', factor)
     curEntity.transform.setPosition(
       0,
       y + StairManager.intervalY,
-      z - StairManager.intervalZ
+      z - StairManager.intervalZ,
     );
     curEntity.transform.setRotation(30, 0, 0);
 
-    if(curEntity.getComponent(MoveScript)) {
+    if (curEntity.getComponent(MoveScript)) {
       console.log('有了')
     }
-    
 
     curEntity.addComponent(MoveScript);
 
     this.stairRootEntity!.addChild(curEntity);
-
 
     // 移除第一个梯子
     const firstEntity = this.stairRootEntity!.children[0];
@@ -149,10 +149,11 @@ export class StairManager {
 class MoveScript extends Script {
   onUpdate(deltaTime: number) {
     const { x, y, z } = this.entity.transform.position;
+    const factor = SpeedManager.instance.speedFactor;
     this.entity.transform.setPosition(
       0,
-      y - deltaTime * StairManager.intervalY ,
-      z + deltaTime * StairManager.intervalZ
+      y - deltaTime * StairManager.intervalY / factor,
+      z + deltaTime * StairManager.intervalZ / factor
     );
   }
 }
@@ -166,7 +167,11 @@ class CollisionScript extends Script {
 
     for (let i = 0; i < components.length; i++) {
       const { min, max } = components[i].bounds;
-      this.addCollider(new Vector3(max.x - min.x, max.y - min.y, max.z - min.z),);
+
+      // // TODO 问一下有一个为啥那么大？
+      const x = max.x - min.x > 3.5 ? 3 : max.x - min.x;
+
+      this.addCollider(new Vector3(x, max.y - min.y, max.z - min.z),);
     }
   }
 

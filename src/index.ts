@@ -6,6 +6,7 @@ import { PhysXPhysics } from "@galacean/engine-physics-physx";
 import { Score } from "./component/Score";
 import { CtrlButton } from "./component/CtrlButton";
 import { addWireframe } from "./util";
+import { SpeedManager } from "./speedManager";
 
 // const vConsole = new VConsole()
 
@@ -75,6 +76,7 @@ export class GameCtrl {
       false;
 
     StairManager.instance.stop();
+    SpeedManager.instance.reset();
     this._rootEntity.findByName("ctrl").isActive = true;
   }
 
